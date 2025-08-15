@@ -11,10 +11,10 @@ async function bootstrap() {
   app.enableCors();
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('API Taller')
-    .setDescription('Esta api es del taller..')
-    .setVersion('1.0')
-    .addTag('taller')
+    .setTitle('API app store')
+    .setDescription('Esta api describe la plataforma de aplicaciones mobile')
+    .setVersion('1.0.0')
+    .addTag('app-store-api')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
