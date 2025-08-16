@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
 import { AplicationsService } from './aplications.service';
 import { CreateAplicationDto } from './dto/create-aplication.dto';
 import { UpdateAplicationDto } from './dto/update-aplication.dto';
+import { Aplication } from './entities/aplication.entity';
 
 @Controller('aplications')
 export class AplicationsController {
@@ -13,8 +14,8 @@ export class AplicationsController {
   }
 
   @Get()
-  findAll() {
-    return this.aplicationsService.findAll();
+  findAll( @Query('nombre') nombre?: string, @Query('so') so?: string ): Aplication[] {
+    return this.aplicationsService.findAll(nombre, so);
   }
 
   @Get(':id')

@@ -1,4 +1,4 @@
-export enum SistemaOperativio {
+export enum SistemaOperativo {
 
     android = "Android",
     ios = "iOS"
