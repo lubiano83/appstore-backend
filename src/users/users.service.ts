@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -13,6 +13,8 @@ export class UsersService {
   constructor(private readonly aplicationsService: AplicationsService) {};
 
   create(createUserDto: CreateUserDto): User {
+    const usuarioExiste = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === createUserDto.nombreUsuario.toLowerCase().trim());
+    if(usuarioExiste) throw new BadRequestException("Ese usuario ya existe..");
     const nuevoUsuario = new User(
       createUserDto.nombreUsuario,
       createUserDto.email,
@@ -55,10 +57,14 @@ export class UsersService {
     if(!usuario) throw new NotFoundException("Ese usuario no existe..");
     let aplicacion = this.aplicationsService.findOne(id);
     if(!aplicacion) throw new NotFoundException("Esa aplicacion no existe..");
-    usuario.aplicacionesDescargadas.push(aplicacion.nombre);
-    aplicacion.descargas++;
+    const aplicacionYaDescargada = usuario.aplicacionesDescargadas.find(aplicacion => aplicacion.id === id);
+    if(aplicacionYaDescargada) {
+      aplicacion.descargas++;
+    } else {
+      usuario.aplicacionesDescargadas.push(aplicacion);
+      aplicacion.descargas++;
+    }
     return aplicacion;
   };
-
 
 }
