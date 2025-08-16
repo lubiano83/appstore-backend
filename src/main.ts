@@ -21,5 +21,4 @@ async function bootstrap() {
   // Listen
   await app.listen(process.env.PORT ?? 3000);
   console.log(`Escuchando en http://${HOST}:${PORT}`);
-}
-bootstrap();
+}; bootstrap();
