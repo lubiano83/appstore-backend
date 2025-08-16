@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { AplicationsService } from 'src/aplications/aplications.service';
+import { Aplication } from 'src/aplications/entities/aplication.entity';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  private usuarios: User[] = [];
+
+  constructor(private readonly aplicationsService: AplicationsService) {};
+
+  create(createUserDto: CreateUserDto): User {
+    const nuevoUsuario = new User(
+      createUserDto.nombreUsuario,
+      createUserDto.email,
+      createUserDto.password,
+      []
+    );
+    this.usuarios.push(nuevoUsuario);
+    return nuevoUsuario;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findAll(email?: String): User[] {
+    if(email) return this.usuarios.filter(usuario => usuario.email.toLowerCase().trim() === email.toLowerCase().trim());
+    return this.usuarios;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(nombre: string): User {
+    const usuario = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
+    if(!usuario) throw new NotFoundException("Ese usuario no existe..");
+    return usuario;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(nombre: string, updateUserDto: UpdateUserDto): User {
+    let usuario = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
+    if(!usuario) throw new NotFoundException("Ese usuario no existe..");
+    usuario.email = updateUserDto.email;
+    usuario.password = updateUserDto.password;
+    return usuario;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(nombre: string): User {
+    const usuario = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
+    if(!usuario) throw new NotFoundException("Ese usuario no existe..");
+    const usuarioEliminado = this.usuarios.filter(usuario => usuario.nombreUsuario.toLowerCase().trim() !== nombre.toLowerCase().trim());
+    this.usuarios = usuarioEliminado;
+    return usuario;
   }
+
+  downloadApp(nombre: string, id: number): Aplication {
+    let usuario = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
+    if(!usuario) throw new NotFoundException("Ese usuario no existe..");
+    let aplicacion = this.aplicationsService.findOne(id);
+    if(!aplicacion) throw new NotFoundException("Esa aplicacion no existe..");
+    usuario.aplicacionesDescargadas.push(aplicacion.nombre);
+    aplicacion.descargas++;
+    return aplicacion;
+  };
+
+
 }
