@@ -1,26 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnsupportedMediaTypeException, UploadedFile } from '@nestjs/common';
 import { CreateAplicationDto } from './dto/create-aplication.dto';
 import { UpdateAplicationDto } from './dto/update-aplication.dto';
+import { Aplication } from './entities/aplication.entity';
 
 @Injectable()
 export class AplicationsService {
-  create(createAplicationDto: CreateAplicationDto) {
-    return 'This action adds a new aplication';
+
+  private aplicaciones: Aplication[] = [];
+
+  create(createAplicationDto: CreateAplicationDto): Aplication {
+    const nombreExist = this.aplicaciones.find(aplicacion => aplicacion.nombre.toLowerCase().trim() === createAplicationDto.nombre.toLowerCase().trim());
+    if(nombreExist) throw new BadRequestException("Ese nombre ya existe..");
+    const nuevaAplicacion = new Aplication(
+      this.aplicaciones.length + 1,
+      createAplicationDto.nombre,
+      createAplicationDto.precio,
+      createAplicationDto.sistemaOperativo,
+      createAplicationDto.tamano,
+      "1.0.0"
+    )
+    this.aplicaciones.push(nuevaAplicacion);
+    return nuevaAplicacion;
   }
 
-  findAll() {
-    return `This action returns all aplications`;
+  findAll(nombre?: string, so?: string): Aplication[] {
+    if(nombre && so) return this.aplicaciones.filter(aplicacion => aplicacion.sistemaOperativo.toLowerCase() === so.toLowerCase() && aplicacion.nombre.toLowerCase() === nombre.toLowerCase());
+    if(nombre) return this.aplicaciones.filter(aplicacion => aplicacion.nombre.toLowerCase() === nombre.toLowerCase());
+    if(so) return this.aplicaciones.filter(aplicacion => aplicacion.sistemaOperativo.toLowerCase() === so.toLowerCase());
+    return this.aplicaciones;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} aplication`;
+  findOne(id: number): Aplication {
+    const aplicacion = this.buscar(aplicacion => aplicacion.id === id);
+    if(!aplicacion) throw new NotFoundException("Ese id no existe..");
+    return aplicacion;
   }
 
-  update(id: number, updateAplicationDto: UpdateAplicationDto) {
-    return `This action updates a #${id} aplication`;
+  buscar(funcionBusqueda: (app: Aplication) => boolean): Aplication | undefined {
+    for (let i = 0; i < this.aplicaciones.length; i++) {
+      const resultado = funcionBusqueda(this.aplicaciones[i]);
+      if (resultado) return this.aplicaciones[i];
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} aplication`;
+  update(id: number, updateAplicationDto: UpdateAplicationDto): Aplication {
+    let aplicacion = this.findOne(id);
+    if(!aplicacion) throw new NotFoundException("Ese id no existe..");
+    aplicacion.version = updateAplicationDto.version;
+    aplicacion.precio = updateAplicationDto.precio;
+    aplicacion.tamano = updateAplicationDto.tamano;
+    return aplicacion;
+  }
+
+  remove(id: number): Aplication {
+    const aplicacion = this.findOne(id);
+    if(!aplicacion) throw new NotFoundException("Ese id no existe..");
+    const aplicaciones = this.aplicaciones.filter(aplicacion => aplicacion.id !== id);
+    this.aplicaciones = aplicaciones;
+    return aplicacion;
   }
 }

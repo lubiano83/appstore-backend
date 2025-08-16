@@ -1,34 +1,32 @@
-import { SistemaOperativio } from "../enum/sistemaOperativo.enum";
+import { SistemaOperativo } from "../enum/sistemaOperativo.enum";
 
 export class Aplication {
 
     id: number;
     nombre: string;
     precio: number;
-    sistemaOperativo: SistemaOperativio;
-    calificacion: number;
-    tamaño: number;
-    version: number;
-    descargas: number;
+    sistemaOperativo: SistemaOperativo;
+    calificacion: number = 0;
+    tamano: number;
+    version: string;
+    descargas: number = 0;
 
     constructor(
         id: number,
         nombre: string,
         precio: number,
-        sistemaOperativo: SistemaOperativio,
-        calificacion: number,
-        tamaño: number,
-        version: number,
-        descargas: number
+        sistemaOperativo: SistemaOperativo,
+        tamano: number,
+        version: string
     ) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
         this.sistemaOperativo = sistemaOperativo;
-        this.calificacion = calificacion;
-        this.tamaño = tamaño;
+        this.calificacion;
+        this.tamano = tamano;
         this.version = version;
-        this.descargas = descargas;        
+        this.descargas;
     };
     
 };
