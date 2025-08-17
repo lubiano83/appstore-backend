@@ -31,9 +31,16 @@ export class UsersService {
   }
 
   findOne(nombre: string): User {
-    const usuario = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
+    const usuario = this.buscar(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
     if(!usuario) throw new NotFoundException("Ese usuario no existe..");
     return usuario;
+  }
+
+  buscar(funcionBusqueda: (user: User) => boolean): User | undefined {
+  for (let i = 0; i < this.usuarios.length; i++) {
+    const resultado = funcionBusqueda(this.usuarios[i]);
+    if (resultado) return this.usuarios[i];
+    }
   }
 
   update(nombre: string, updateUserDto: UpdateUserDto): User {
