@@ -46,9 +46,9 @@ export class AplicationsService {
   update(id: number, updateAplicationDto: UpdateAplicationDto): Aplication {
     let aplicacion = this.findOne(id);
     if(!aplicacion) throw new NotFoundException("Ese id no existe..");
-    aplicacion.version = updateAplicationDto.version;
-    aplicacion.precio = updateAplicationDto.precio;
-    aplicacion.tamano = updateAplicationDto.tamano;
+    aplicacion.version = updateAplicationDto.version ?? aplicacion.version;
+    aplicacion.precio = updateAplicationDto.precio ?? aplicacion.precio;
+    aplicacion.tamano = updateAplicationDto.tamano ?? aplicacion.tamano;
     return aplicacion;
   }
 

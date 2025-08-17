@@ -39,8 +39,8 @@ export class UsersService {
   update(nombre: string, updateUserDto: UpdateUserDto): User {
     let usuario = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === nombre.toLowerCase().trim());
     if(!usuario) throw new NotFoundException("Ese usuario no existe..");
-    usuario.email = updateUserDto.email;
-    usuario.password = updateUserDto.password;
+    usuario.email = updateUserDto.email ?? usuario.email;
+    usuario.password = updateUserDto.password ?? usuario.password;
     return usuario;
   }
 

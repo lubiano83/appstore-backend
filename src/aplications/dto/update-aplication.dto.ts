@@ -3,8 +3,8 @@ import { CreateAplicationDto } from './create-aplication.dto';
 
 export class UpdateAplicationDto extends PartialType(CreateAplicationDto) {
 
-    version: string;
-    precio: number;
-    tamano: number;
+    version?: string;
+    precio?: number;
+    tamano?: number;
     
 };
