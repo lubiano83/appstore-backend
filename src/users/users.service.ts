@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -12,17 +12,22 @@ export class UsersService {
 
   constructor(private readonly aplicationsService: AplicationsService) {};
 
-  create(createUserDto: CreateUserDto): User {
-    const usuarioExiste = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === createUserDto.nombreUsuario.toLowerCase().trim());
-    if(usuarioExiste) throw new BadRequestException("Ese usuario ya existe..");
-    const nuevoUsuario = new User(
-      createUserDto.nombreUsuario,
-      createUserDto.email,
-      createUserDto.password,
-      []
-    );
-    this.usuarios.push(nuevoUsuario);
-    return nuevoUsuario;
+  create(createUserDto: CreateUserDto): User | undefined {
+    try {
+      const usuarioExiste = this.usuarios.find(usuario => usuario.nombreUsuario.toLowerCase().trim() === createUserDto.nombreUsuario.toLowerCase().trim());
+      if(usuarioExiste) throw new BadRequestException("Ese usuario ya existe..");
+      const nuevoUsuario = new User(
+        createUserDto.nombreUsuario,
+        createUserDto.email,
+        createUserDto.password,
+        []
+      );
+      this.usuarios.push(nuevoUsuario);
+      return nuevoUsuario;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException("Hubo un error en el servidor..");
+    }
   }
 
   findAll(email?: String): User[] {
